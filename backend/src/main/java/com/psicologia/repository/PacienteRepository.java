@@ -19,6 +19,8 @@ public interface PacienteRepository extends JpaRepository<Paciente, UUID> {
     
     Page<Paciente> findByAtivoTrue(Pageable pageable);
     
+    Page<Paciente> findByAtivoTrueAndUsuarioId(UUID usuarioId, Pageable pageable);
+    
     Optional<Paciente> findByCpf(String cpf);
     
     @Query("SELECT p FROM Paciente p WHERE p.ativo = true AND " +
@@ -27,5 +29,13 @@ public interface PacienteRepository extends JpaRepository<Paciente, UUID> {
            "LOWER(p.email) LIKE LOWER(CONCAT('%', :termo, '%')))")
     Page<Paciente> buscarPorTermo(@Param("termo") String termo, Pageable pageable);
     
+    @Query("SELECT p FROM Paciente p WHERE p.ativo = true AND p.usuarioId = :usuarioId AND " +
+           "(LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :termo, '%')) OR " +
+           "LOWER(p.cpf) LIKE LOWER(CONCAT('%', :termo, '%')) OR " +
+           "LOWER(p.email) LIKE LOWER(CONCAT('%', :termo, '%')))")
+    Page<Paciente> buscarPorTermoEUsuario(@Param("termo") String termo, @Param("usuarioId") UUID usuarioId, Pageable pageable);
+    
     boolean existsByCpf(String cpf);
+    
+    Optional<Paciente> findByIdAndUsuarioId(UUID id, UUID usuarioId);
 }

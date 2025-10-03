@@ -11,11 +11,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/pacientes")
+@PreAuthorize("hasRole('PSICOLOGO') or hasRole('ADMIN')")
 public class PacienteController {
 
     private final PacienteService pacienteService;

@@ -47,6 +47,9 @@ public class Paciente {
     
     private String observacoes;
     
+    @Column(name = "usuario_id", nullable = false)
+    private UUID usuarioId;
+    
     @Column(nullable = false)
     private Boolean ativo = true;
     
@@ -115,4 +118,7 @@ public class Paciente {
     
     public LocalDateTime getDataAtualizacao() { return dataAtualizacao; }
     public void setDataAtualizacao(LocalDateTime dataAtualizacao) { this.dataAtualizacao = dataAtualizacao; }
+    
+    public UUID getUsuarioId() { return usuarioId; }
+    public void setUsuarioId(UUID usuarioId) { this.usuarioId = usuarioId; }
 }

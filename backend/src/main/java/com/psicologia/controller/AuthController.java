@@ -51,7 +51,9 @@ public class AuthController {
             String token = jwtService.generateToken((org.springframework.security.core.userdetails.UserDetails) authentication.getPrincipal());
             logger.info("Successful login for user: {}", sanitizedUsername);
             
-            return ResponseEntity.ok(new LoginResponse(token, loginRequest.getUsername()));
+            String role = authentication.getAuthorities().iterator().next().getAuthority().replace("ROLE_", "");
+            logger.info("Login successful - Username: {}, Role: {}", loginRequest.getUsername(), role);
+            return ResponseEntity.ok(new LoginResponse(token, loginRequest.getUsername(), role));
         } catch (BadCredentialsException e) {
             logger.error("=== CREDENCIAIS INVÁLIDAS ===");
             logger.error("Failed login attempt for user: {} - Invalid credentials", sanitizedUsername);

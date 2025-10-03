@@ -17,4 +17,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
     boolean existsByUsername(String username);
     
     boolean existsByEmail(String email);
+    
+    org.springframework.data.domain.Page<Usuario> findByAtivoTrue(org.springframework.data.domain.Pageable pageable);
 }

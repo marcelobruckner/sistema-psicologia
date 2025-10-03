@@ -24,6 +24,10 @@ public class Usuario {
     @Column(name = "nome_completo", nullable = false, length = 150)
     private String nomeCompleto;
     
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role = Role.PSICOLOGO;
+    
     @Column(nullable = false)
     private Boolean ativo = true;
     
@@ -68,4 +72,11 @@ public class Usuario {
     
     public LocalDateTime getDataAtualizacao() { return dataAtualizacao; }
     public void setDataAtualizacao(LocalDateTime dataAtualizacao) { this.dataAtualizacao = dataAtualizacao; }
+    
+    public Role getRole() { return role; }
+    public void setRole(Role role) { this.role = role; }
+    
+    public enum Role {
+        ADMIN, PSICOLOGO
+    }
 }

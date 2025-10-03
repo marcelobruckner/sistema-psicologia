@@ -2,9 +2,13 @@ package com.psicologia.service;
 
 import com.psicologia.dto.PacienteRequest;
 import com.psicologia.entity.Paciente;
+import com.psicologia.entity.Usuario;
 import com.psicologia.repository.PacienteRepository;
+import com.psicologia.repository.UsuarioRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,9 +19,11 @@ import java.util.UUID;
 public class PacienteService {
 
     private final PacienteRepository pacienteRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    public PacienteService(PacienteRepository pacienteRepository) {
+    public PacienteService(PacienteRepository pacienteRepository, UsuarioRepository usuarioRepository) {
         this.pacienteRepository = pacienteRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
     public List<Paciente> listarTodos() {
@@ -25,15 +31,30 @@ public class PacienteService {
     }
 
     public Page<Paciente> listarComPaginacao(Pageable pageable) {
-        return pacienteRepository.findByAtivoTrue(pageable);
+        if (isAdmin()) {
+            return pacienteRepository.findByAtivoTrue(pageable);
+        } else {
+            UUID usuarioId = getCurrentUserId();
+            return pacienteRepository.findByAtivoTrueAndUsuarioId(usuarioId, pageable);
+        }
     }
 
     public Page<Paciente> buscarPorTermo(String termo, Pageable pageable) {
-        return pacienteRepository.buscarPorTermo(termo, pageable);
+        if (isAdmin()) {
+            return pacienteRepository.buscarPorTermo(termo, pageable);
+        } else {
+            UUID usuarioId = getCurrentUserId();
+            return pacienteRepository.buscarPorTermoEUsuario(termo, usuarioId, pageable);
+        }
     }
 
     public Optional<Paciente> buscarPorId(UUID id) {
-        return pacienteRepository.findById(id);
+        if (isAdmin()) {
+            return pacienteRepository.findById(id);
+        } else {
+            UUID usuarioId = getCurrentUserId();
+            return pacienteRepository.findByIdAndUsuarioId(id, usuarioId);
+        }
     }
 
     public Paciente salvar(PacienteRequest request) {
@@ -56,11 +77,12 @@ public class PacienteService {
 
         Paciente paciente = new Paciente();
         mapearRequestParaEntity(request, paciente);
+        paciente.setUsuarioId(getCurrentUserId());
         return pacienteRepository.save(paciente);
     }
 
     public Paciente atualizar(UUID id, PacienteRequest request) {
-        Paciente paciente = pacienteRepository.findById(id)
+        Paciente paciente = buscarPorId(id)
                 .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
 
         if (request.getCpf() != null && !request.getCpf().equals(paciente.getCpf())) {
@@ -75,7 +97,7 @@ public class PacienteService {
     }
 
     public void excluir(UUID id) {
-        Paciente paciente = pacienteRepository.findById(id)
+        Paciente paciente = buscarPorId(id)
                 .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
         
         paciente.setAtivo(false);
@@ -95,5 +117,24 @@ public class PacienteService {
         paciente.setContatoEmergencia(request.getContatoEmergencia());
         paciente.setTelefoneEmergencia(request.getTelefoneEmergencia());
         paciente.setObservacoes(request.getObservacoes());
+    }
+    
+    private UUID getCurrentUserId() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || auth.getName() == null) {
+            throw new RuntimeException("Usuário não autenticado");
+        }
+        
+        String username = auth.getName();
+        Usuario usuario = usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + username));
+        
+        return usuario.getId();
+    }
+    
+    private boolean isAdmin() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
     }
 }
