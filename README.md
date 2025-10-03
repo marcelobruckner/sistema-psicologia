@@ -180,19 +180,27 @@ docker volume rm psicologia_data
 
 ## Como executar
 
+### Desenvolvimento
 ```bash
 # 1. Iniciar banco de dados
 docker run -d --name psicologia-db -e POSTGRES_DB=psicologia -e POSTGRES_USER=admin -e POSTGRES_PASSWORD=admin123 -p 5432:5432 -v psicologia_data:/var/lib/postgresql/data postgres:15
 
 # 2. Executar backend
-cd backend && ./mvnw spring-boot:run
+cd backend && mvn spring-boot:run
 
 # 3. Executar frontend
-cd frontend && ng serve
+cd frontend && npm install && ng serve
+```
 
-# OU ambiente completo via Docker Compose
+### Docker Compose (Ambiente completo)
+```bash
 docker-compose up -d
 ```
+
+### Acessar a aplicação
+- **Frontend**: http://localhost:4200
+- **Backend API**: http://localhost:8080
+- **PostgreSQL**: localhost:5432
 
 ## URLs
 
@@ -221,6 +229,29 @@ curl -X POST http://localhost:8080/api/auth/login \
   -d '{"username":"admin","password":"senha123"}'
 ```
 
+## Frontend Angular
+
+### Estrutura Implementada
+- **AuthService** - Gerenciamento de autenticação e estado do usuário
+- **AuthGuard** - Proteção de rotas autenticadas
+- **LoginComponent** - Tela de login com Angular Material
+- **DashboardComponent** - Tela principal após autenticação
+- **Models TypeScript** - Interfaces para tipagem
+
+### Funcionalidades
+- 🔐 Sistema de login com JWT
+- 🛡️ Rotas protegidas por guard
+- 📱 Interface responsiva com Angular Material
+- 🔄 Gerenciamento de estado reativo
+- 💾 Persistência de sessão no localStorage
+
+### Como executar o Frontend
+```bash
+cd frontend
+npm install
+ng serve
+```
+
 ## Estado Atual
 
 - ✅ Estrutura base criada com pastas organizadas
@@ -228,6 +259,8 @@ curl -X POST http://localhost:8080/api/auth/login \
 - ✅ Docker configurado para todos os serviços
 - ✅ Configuração JWT + CORS implementada
 - ✅ Endpoints básicos funcionando
+- ✅ Frontend Angular com autenticação implementado
+- ✅ Tela de login e dashboard funcionais
 - ⏳ Pronto para implementação das entidades e funcionalidades específicas
 
 O projeto está estruturado para ser um sistema completo de gestão de pacientes e prontuários médicos para psicólogos, com autenticação JWT e interface moderna em Angular Material.
