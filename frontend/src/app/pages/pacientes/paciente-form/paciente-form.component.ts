@@ -22,8 +22,14 @@ export class PacienteFormComponent implements OnInit {
     private dialogRef: MatDialogRef<PacienteFormComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { paciente: Paciente | null }
   ) {
-    this.isEdit = !!data.paciente;
-    this.form = this.createForm();
+    try {
+      this.isEdit = !!(data?.paciente);
+      this.form = this.createForm();
+    } catch (error) {
+      console.error('Erro ao inicializar formulário:', error);
+      this.snackBar.open('Erro ao carregar formulário', 'Fechar', { duration: 3000 });
+      this.dialogRef.close(false);
+    }
   }
 
   ngOnInit(): void {
