@@ -19,6 +19,10 @@ public class AuthController {
 
     private static final String TEST_MESSAGE = "Auth endpoint funcionando!";
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+    
+    static {
+        logger.info("AuthController class loaded");
+    }
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
@@ -26,11 +30,13 @@ public class AuthController {
     public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        logger.info("AuthController initialized successfully");
     }
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
-        logger.info("Login attempt for user: {}", loginRequest.getUsername());
+        String sanitizedUsername = sanitizeForLogging(loginRequest.getUsername());
+        logger.info("Login attempt for user: {}", sanitizedUsername);
         
         try {
             Authentication authentication = authenticationManager.authenticate(
@@ -41,20 +47,30 @@ public class AuthController {
             );
 
             String token = jwtUtil.generateToken(loginRequest.getUsername());
-            logger.info("Successful login for user: {}", loginRequest.getUsername());
+            logger.info("Successful login for user: {}", sanitizedUsername);
             
             return ResponseEntity.ok(new LoginResponse(token, loginRequest.getUsername()));
         } catch (BadCredentialsException e) {
-            logger.warn("Failed login attempt for user: {} - Invalid credentials", loginRequest.getUsername());
+            logger.warn("Failed login attempt for user: {} - Invalid credentials", sanitizedUsername);
             return ResponseEntity.status(401).build();
         } catch (Exception e) {
-            logger.error("Login error for user: {} - {}", loginRequest.getUsername(), e.getMessage());
+            logger.error("Login error for user: {} - {}", sanitizedUsername, sanitizeForLogging(e.getMessage()));
             return ResponseEntity.status(500).build();
         }
     }
 
     @GetMapping("/test")
     public ResponseEntity<String> test() {
+        logger.debug("Test endpoint accessed");
         return ResponseEntity.ok(TEST_MESSAGE);
+    }
+
+    private String sanitizeForLogging(String input) {
+        if (input == null) {
+            return "null";
+        }
+        return input.replaceAll("[\\r\\n\\t]", "_")
+                   .replaceAll("[\\p{Cntrl}]", "")
+                   .trim();
     }
 }

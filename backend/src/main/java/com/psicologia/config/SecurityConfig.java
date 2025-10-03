@@ -24,6 +24,7 @@ public class SecurityConfig {
     private static final String[] ALLOWED_ORIGINS = {"http://localhost:4200"};
     private static final String[] ALLOWED_METHODS = {"GET", "POST", "PUT", "DELETE", "OPTIONS"};
     private static final String[] ALLOWED_HEADERS = {"*"};
+    private static final String[] PUBLIC_ENDPOINTS = {"/api/health", "/api/auth/**"};
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -36,7 +37,7 @@ public class SecurityConfig {
     }
 
     private void configureAuthorization(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
-        auth.requestMatchers("/api/health", "/api/auth/**").permitAll()
+        auth.requestMatchers(PUBLIC_ENDPOINTS).permitAll()
             .anyRequest().authenticated();
     }
 

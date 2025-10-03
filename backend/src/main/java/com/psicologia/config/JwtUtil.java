@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import io.jsonwebtoken.JwtException;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.time.Instant;
 import java.util.Date;
 
 @Component
@@ -39,10 +40,11 @@ public class JwtUtil {
     }
 
     public String generateToken(String username) {
+        long now = System.currentTimeMillis();
         return Jwts.builder()
                 .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .setIssuedAt(new Date(now))
+                .setExpiration(new Date(now + expiration))
                 .signWith(signingKey, SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -63,13 +65,16 @@ public class JwtUtil {
 
     public Boolean isTokenExpired(String token) {
         Date expiration = getExpirationDateFromToken(token);
-        return expiration.before(new Date());
+        return expiration.before(getCurrentDate());
     }
 
     public Boolean validateToken(String token, String username) {
         try {
-            String tokenUsername = getUsernameFromToken(token);
-            return (tokenUsername.equals(username) && !isTokenExpired(token));
+            Claims claims = getClaimsFromToken(token);
+            String tokenUsername = claims.getSubject();
+            Date tokenExpiration = claims.getExpiration();
+            
+            return (tokenUsername.equals(username) && tokenExpiration.after(getCurrentDate()));
         } catch (JwtException e) {
             logger.debug("JWT validation failed: {}", e.getMessage());
             return false;
@@ -77,5 +82,9 @@ public class JwtUtil {
             logger.error("Unexpected error during JWT validation: {}", e.getMessage());
             return false;
         }
+    }
+
+    private Date getCurrentDate() {
+        return Date.from(Instant.now());
     }
 }
