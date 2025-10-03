@@ -1,0 +1,86 @@
+<h2 mat-dialog-title>{{isEdit ? 'Editar Paciente' : 'Novo Paciente'}}</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <mat-dialog-content>
+    <div class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Nome Completo *</mat-label>
+        <input matInput formControlName="nomeCompleto">
+        <mat-error>{{getErrorMessage('nomeCompleto')}}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>CPF *</mat-label>
+        <input matInput formControlName="cpf" placeholder="00000000000">
+        <mat-error>{{getErrorMessage('cpf')}}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>RG</mat-label>
+        <input matInput formControlName="rg">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Data de Nascimento *</mat-label>
+        <input matInput type="date" formControlName="dataNascimento">
+        <mat-error>{{getErrorMessage('dataNascimento')}}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Telefone *</mat-label>
+        <input matInput formControlName="telefone" placeholder="11999999999">
+        <mat-error>{{getErrorMessage('telefone')}}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email">
+        <mat-error>{{getErrorMessage('email')}}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Profissão</mat-label>
+        <input matInput formControlName="profissao">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Estado Civil</mat-label>
+        <mat-select formControlName="estadoCivil">
+          <mat-option value="SOLTEIRO">Solteiro(a)</mat-option>
+          <mat-option value="CASADO">Casado(a)</mat-option>
+          <mat-option value="DIVORCIADO">Divorciado(a)</mat-option>
+          <mat-option value="VIUVO">Viúvo(a)</mat-option>
+          <mat-option value="UNIAO_ESTAVEL">União Estável</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Endereço</mat-label>
+        <textarea matInput formControlName="endereco" rows="2"></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Contato de Emergência</mat-label>
+        <input matInput formControlName="contatoEmergencia">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Telefone de Emergência</mat-label>
+        <input matInput formControlName="telefoneEmergencia" placeholder="11999999999">
+        <mat-error>{{getErrorMessage('telefoneEmergencia')}}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Observações</mat-label>
+        <textarea matInput formControlName="observacoes" rows="3"></textarea>
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="onCancel()">Cancelar</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || loading">
+      {{isEdit ? 'Atualizar' : 'Criar'}}
+    </button>
+  </mat-dialog-actions>
+</form>

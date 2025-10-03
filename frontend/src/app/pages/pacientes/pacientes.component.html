@@ -1,0 +1,72 @@
+<app-navbar></app-navbar>
+
+<div class="container">
+  <div class="header">
+    <h1>Pacientes</h1>
+    <button mat-raised-button color="primary" (click)="novoPaciente()">
+      <mat-icon>add</mat-icon>
+      Novo Paciente
+    </button>
+  </div>
+
+  <div class="search-bar">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Buscar pacientes</mat-label>
+      <input matInput [(ngModel)]="searchTerm" (keyup.enter)="buscar()" placeholder="Nome, CPF ou telefone">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+    <button mat-button (click)="buscar()">Buscar</button>
+    <button mat-button (click)="limparBusca()" *ngIf="searchTerm">Limpar</button>
+  </div>
+
+  <div class="table-container">
+    <table mat-table [dataSource]="pacientes" class="mat-elevation-2">
+      <ng-container matColumnDef="nome">
+        <th mat-header-cell *matHeaderCellDef>Nome</th>
+        <td mat-cell *matCellDef="let paciente">{{paciente.nomeCompleto}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="cpf">
+        <th mat-header-cell *matHeaderCellDef>CPF</th>
+        <td mat-cell *matCellDef="let paciente">{{paciente.cpf}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="telefone">
+        <th mat-header-cell *matHeaderCellDef>Telefone</th>
+        <td mat-cell *matCellDef="let paciente">{{paciente.telefone}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>Email</th>
+        <td mat-cell *matCellDef="let paciente">{{paciente.email || '-'}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="acoes">
+        <th mat-header-cell *matHeaderCellDef>Ações</th>
+        <td mat-cell *matCellDef="let paciente">
+          <button mat-icon-button (click)="editarPaciente(paciente)" matTooltip="Editar">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="excluirPaciente(paciente)" matTooltip="Excluir">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <mat-paginator 
+      [length]="totalElements"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      (page)="onPageChange($event)"
+      showFirstLastButtons>
+    </mat-paginator>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <mat-spinner></mat-spinner>
+  </div>
+</div>

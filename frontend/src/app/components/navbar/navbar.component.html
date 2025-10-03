@@ -1,0 +1,21 @@
+<mat-toolbar color="primary">
+  <button mat-button (click)="navigateTo('/dashboard')">
+    <mat-icon>home</mat-icon>
+    Sistema Psicologia
+  </button>
+  
+  <button mat-button (click)="navigateTo('/pacientes')">
+    <mat-icon>people</mat-icon>
+    Pacientes
+  </button>
+  
+  <span class="spacer"></span>
+  
+  <span *ngIf="currentUser$ | async as user">
+    Olá, {{ user.username }}
+  </span>
+  
+  <button mat-icon-button (click)="logout()" matTooltip="Sair">
+    <mat-icon>logout</mat-icon>
+  </button>
+</mat-toolbar>
