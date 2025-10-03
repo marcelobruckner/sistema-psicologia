@@ -4,6 +4,8 @@ import com.psicologia.config.JwtUtil;
 import com.psicologia.dto.LoginRequest;
 import com.psicologia.dto.LoginResponse;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private static final String TEST_MESSAGE = "Auth endpoint funcionando!";
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
@@ -27,6 +30,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
+        logger.info("Login attempt for user: {}", loginRequest.getUsername());
+        
         try {
             Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -36,11 +41,14 @@ public class AuthController {
             );
 
             String token = jwtUtil.generateToken(loginRequest.getUsername());
+            logger.info("Successful login for user: {}", loginRequest.getUsername());
             
             return ResponseEntity.ok(new LoginResponse(token, loginRequest.getUsername()));
         } catch (BadCredentialsException e) {
+            logger.warn("Failed login attempt for user: {} - Invalid credentials", loginRequest.getUsername());
             return ResponseEntity.status(401).build();
         } catch (Exception e) {
+            logger.error("Login error for user: {} - {}", loginRequest.getUsername(), e.getMessage());
             return ResponseEntity.status(500).build();
         }
     }

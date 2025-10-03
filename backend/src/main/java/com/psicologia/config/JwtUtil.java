@@ -8,12 +8,18 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import io.jsonwebtoken.JwtException;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
 @Component
 public class JwtUtil {
+
+    private static final Logger logger = LoggerFactory.getLogger(JwtUtil.class);
 
     @Value("${spring.security.jwt.secret}")
     private String secret;
@@ -24,20 +30,12 @@ public class JwtUtil {
     private Key signingKey;
     private JwtParser jwtParser;
 
-    private Key getSigningKey() {
-        if (signingKey == null) {
-            signingKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-        }
-        return signingKey;
-    }
-
-    private JwtParser getJwtParser() {
-        if (jwtParser == null) {
-            jwtParser = Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey())
-                    .build();
-        }
-        return jwtParser;
+    @PostConstruct
+    private void init() {
+        this.signingKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        this.jwtParser = Jwts.parserBuilder()
+                .setSigningKey(signingKey)
+                .build();
     }
 
     public String generateToken(String username) {
@@ -45,7 +43,7 @@ public class JwtUtil {
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .signWith(signingKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -58,7 +56,7 @@ public class JwtUtil {
     }
 
     private Claims getClaimsFromToken(String token) {
-        return getJwtParser()
+        return jwtParser
                 .parseClaimsJws(token)
                 .getBody();
     }
@@ -72,7 +70,11 @@ public class JwtUtil {
         try {
             String tokenUsername = getUsernameFromToken(token);
             return (tokenUsername.equals(username) && !isTokenExpired(token));
+        } catch (JwtException e) {
+            logger.debug("JWT validation failed: {}", e.getMessage());
+            return false;
         } catch (Exception e) {
+            logger.error("Unexpected error during JWT validation: {}", e.getMessage());
             return false;
         }
     }
