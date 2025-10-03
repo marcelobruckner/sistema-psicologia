@@ -37,8 +37,21 @@ public class PacienteService {
     }
 
     public Paciente salvar(PacienteRequest request) {
-        if (request.getCpf() != null && pacienteRepository.existsByCpf(request.getCpf())) {
-            throw new RuntimeException("CPF já cadastrado");
+        if (request.getCpf() == null || request.getCpf().trim().isEmpty()) {
+            throw new RuntimeException("CPF é obrigatório");
+        }
+
+        Optional<Paciente> existente = pacienteRepository.findByCpf(request.getCpf());
+        if (existente.isPresent()) {
+            if (existente.get().getAtivo()) {
+                throw new RuntimeException("CPF já cadastrado");
+            } else {
+                // Reativar paciente excluído
+                Paciente paciente = existente.get();
+                mapearRequestParaEntity(request, paciente);
+                paciente.setAtivo(true);
+                return pacienteRepository.save(paciente);
+            }
         }
 
         Paciente paciente = new Paciente();
@@ -50,9 +63,11 @@ public class PacienteService {
         Paciente paciente = pacienteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
 
-        if (request.getCpf() != null && !request.getCpf().equals(paciente.getCpf()) 
-            && pacienteRepository.existsByCpf(request.getCpf())) {
-            throw new RuntimeException("CPF já cadastrado");
+        if (request.getCpf() != null && !request.getCpf().equals(paciente.getCpf())) {
+            Optional<Paciente> existente = pacienteRepository.findByCpf(request.getCpf());
+            if (existente.isPresent() && existente.get().getAtivo()) {
+                throw new RuntimeException("CPF já cadastrado");
+            }
         }
 
         mapearRequestParaEntity(request, paciente);
