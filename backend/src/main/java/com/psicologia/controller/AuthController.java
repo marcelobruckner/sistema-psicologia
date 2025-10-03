@@ -1,6 +1,6 @@
 package com.psicologia.controller;
 
-import com.psicologia.config.JwtUtil;
+import com.psicologia.service.JwtService;
 import com.psicologia.dto.LoginRequest;
 import com.psicologia.dto.LoginResponse;
 import jakarta.validation.Valid;
@@ -25,18 +25,20 @@ public class AuthController {
     }
 
     private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwtUtil;
+    private final JwtService jwtService;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
-        this.authenticationManager = authenticationManager;
-        this.jwtUtil = jwtUtil;
+    public AuthController(AuthenticationManager authManager, JwtService jwtService) {
+        this.authenticationManager = authManager;
+        this.jwtService = jwtService;
         logger.info("AuthController initialized successfully");
     }
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         String sanitizedUsername = sanitizeForLogging(loginRequest.getUsername());
+        logger.info("=== INÍCIO DO LOGIN ===");
         logger.info("Login attempt for user: {}", sanitizedUsername);
+        logger.info("Password length: {}", loginRequest.getPassword().length());
         
         try {
             Authentication authentication = authenticationManager.authenticate(
@@ -46,15 +48,19 @@ public class AuthController {
                 )
             );
 
-            String token = jwtUtil.generateToken(loginRequest.getUsername());
+            String token = jwtService.generateToken((org.springframework.security.core.userdetails.UserDetails) authentication.getPrincipal());
             logger.info("Successful login for user: {}", sanitizedUsername);
             
             return ResponseEntity.ok(new LoginResponse(token, loginRequest.getUsername()));
         } catch (BadCredentialsException e) {
-            logger.warn("Failed login attempt for user: {} - Invalid credentials", sanitizedUsername);
+            logger.error("=== CREDENCIAIS INVÁLIDAS ===");
+            logger.error("Failed login attempt for user: {} - Invalid credentials", sanitizedUsername);
+            logger.error("Exception message: {}", sanitizeForLogging(e.getMessage()));
             return ResponseEntity.status(401).build();
         } catch (Exception e) {
+            logger.error("=== ERRO GERAL NO LOGIN ===");
             logger.error("Login error for user: {} - {}", sanitizedUsername, sanitizeForLogging(e.getMessage()));
+            logger.error("Exception type: {}", e.getClass().getSimpleName());
             return ResponseEntity.status(500).build();
         }
     }
