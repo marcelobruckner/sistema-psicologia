@@ -7,10 +7,21 @@
         <mat-card-header>
           <mat-icon mat-card-avatar>people</mat-icon>
           <mat-card-title>Pacientes</mat-card-title>
-          <mat-card-subtitle>Gerenciar pacientes</mat-card-subtitle>
+          <mat-card-subtitle>{{totalPacientes}} pacientes cadastrados</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
           <p>Cadastrar, editar e visualizar pacientes</p>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="menu-card" (click)="navigateTo('/usuarios')" *ngIf="isAdmin$ | async">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>admin_panel_settings</mat-icon>
+          <mat-card-title>Usuários</mat-card-title>
+          <mat-card-subtitle>{{totalUsuarios}} usuários cadastrados</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <p>Cadastrar e gerenciar usuários do sistema</p>
         </mat-card-content>
       </mat-card>
 

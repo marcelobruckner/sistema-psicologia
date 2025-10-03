@@ -11,7 +11,7 @@ import { Paciente, PacienteRequest } from '../../../models/paciente.model';
   styleUrls: ['./paciente-form.component.scss']
 })
 export class PacienteFormComponent implements OnInit {
-  form: FormGroup;
+  form!: FormGroup;
   isEdit = false;
   loading = false;
 

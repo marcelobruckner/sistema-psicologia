@@ -25,6 +25,8 @@ import { LoginComponent } from './pages/login/login.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { PacientesComponent } from './pages/pacientes/pacientes.component';
 import { PacienteFormComponent } from './pages/pacientes/paciente-form/paciente-form.component';
+import { UsuariosComponent } from './pages/usuarios/usuarios.component';
+import { UsuarioFormComponent } from './pages/usuarios/usuario-form/usuario-form.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 
@@ -35,6 +37,8 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
     DashboardComponent,
     PacientesComponent,
     PacienteFormComponent,
+    UsuariosComponent,
+    UsuarioFormComponent,
     NavbarComponent
   ],
   imports: [
