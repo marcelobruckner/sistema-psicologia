@@ -1,0 +1,25 @@
+<div class="dashboard-container">
+  <mat-toolbar color="primary">
+    <span>Sistema Psicologia</span>
+    <span class="spacer"></span>
+    <span *ngIf="currentUser$ | async as user">
+      Olá, {{ user.username }}
+    </span>
+    <button mat-icon-button (click)="logout()" matTooltip="Sair">
+      <mat-icon>logout</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <div class="content">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Dashboard</mat-card-title>
+        <mat-card-subtitle>Bem-vindo ao Sistema de Psicologia</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Sistema funcionando corretamente!</p>
+        <p>Aqui serão implementadas as funcionalidades principais.</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
