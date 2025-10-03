@@ -18,14 +18,15 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
+        '[format_sql]': true
   
-  security:
-    jwt:
-      secret: minha-chave-secreta-super-segura-para-jwt-tokens
-      expiration: 86400000 # 24 horas
+
+app:
+  jwt:
+    secret: minha-chave-secreta-super-segura-para-jwt-tokens
+    expiration: 86400000 # 24 horas
 
 logging:
   level:
-    com.psicologia: DEBUG
-    org.springframework.security: DEBUG
+    '[com.psicologia]': DEBUG
+    '[org.springframework.security]': DEBUG

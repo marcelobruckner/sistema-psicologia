@@ -1,20 +1,29 @@
 -- =====================================================
 -- CORREÇÃO DAS SENHAS BCRYPT
 -- =====================================================
+-- IMPORTANTE: Gere os hashes BCrypt usando a aplicação Spring Boot
+-- ou uma ferramenta externa antes de executar este script
 
--- Atualizar senha do admin (admin123)
+-- Exemplo de como gerar hash BCrypt em Java:
+-- BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+-- String hash = encoder.encode("sua_senha_aqui");
+
+-- Atualizar senha do admin
+-- SUBSTITUA ${ADMIN_PASSWORD_HASH} pelo hash BCrypt gerado
 UPDATE usuarios 
-SET password = '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'
+SET password = '${ADMIN_PASSWORD_HASH}'
 WHERE username = 'admin';
 
--- Atualizar senha do psicologo (psicologo123) 
+-- Atualizar senha do psicologo
+-- SUBSTITUA ${PSICOLOGO_PASSWORD_HASH} pelo hash BCrypt gerado
 UPDATE usuarios 
-SET password = '$2a$10$N9qo8uLOickgx2ZMRZoMye7VFnjZcHzP3.K9n/qeGTT2QbO/1cxBm'
+SET password = '${PSICOLOGO_PASSWORD_HASH}'
 WHERE username = 'psicologo';
 
--- Atualizar senha do teste (teste123)
+-- Atualizar senha do teste
+-- SUBSTITUA ${TESTE_PASSWORD_HASH} pelo hash BCrypt gerado
 UPDATE usuarios 
-SET password = '$2a$10$DowJonesLocker2019SALT.O19n.GQXRZ2YFXfokUdOWfFEog/4q'
+SET password = '${TESTE_PASSWORD_HASH}'
 WHERE username = 'teste';
 
 -- Verificar as senhas atualizadas
