@@ -200,11 +200,34 @@ docker-compose up -d
 - **Backend API**: http://localhost:8080
 - **PostgreSQL**: localhost:5432
 
+## Endpoints Disponíveis
+
+### Endpoints Públicos
+- **GET** `/api/health` - Status da API
+- **GET** `/api/auth/test` - Teste do endpoint de autenticação
+- **POST** `/api/auth/login` - Login com JWT
+
+### Exemplo de Uso
+```bash
+# Testar health
+curl http://localhost:8080/api/health
+
+# Testar auth
+curl http://localhost:8080/api/auth/test
+
+# Login (ainda sem usuários cadastrados)
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"senha123"}'
+```
+
 ## Estado Atual
 
 - ✅ Estrutura base criada com pastas organizadas
 - ✅ Configurações de banco e segurança definidas
 - ✅ Docker configurado para todos os serviços
+- ✅ Configuração JWT + CORS implementada
+- ✅ Endpoints básicos funcionando
 - ⏳ Pronto para implementação das entidades e funcionalidades específicas
 
 O projeto está estruturado para ser um sistema completo de gestão de pacientes e prontuários médicos para psicólogos, com autenticação JWT e interface moderna em Angular Material.
