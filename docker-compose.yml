@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
   postgres:
-    image: postgres:15
+    image: postgres:15-alpine
     container_name: psicologia-db
     environment:
       POSTGRES_DB: psicologia
@@ -11,12 +9,22 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - psicologia_data:/var/lib/postgresql/data
+      - ./database:/docker-entrypoint-initdb.d
     networks:
       - psicologia-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d psicologia"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
 
   backend:
-    build: ./backend
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: psicologia-backend
     ports:
       - "8080:8080"
@@ -24,10 +32,13 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/psicologia
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: admin123
+      SPRING_PROFILES_ACTIVE: docker
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - psicologia-network
+    restart: unless-stopped
 
   frontend:
     build: ./frontend
@@ -40,7 +51,7 @@ services:
       - psicologia-network
 
 volumes:
-  postgres_data:
+  psicologia_data:
 
 networks:
   psicologia-network:

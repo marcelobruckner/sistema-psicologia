@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PacienteService } from '../../services/paciente.service';
+import { AuthService } from '../../services/auth.service';
 import { Paciente, PacientePage } from '../../models/paciente.model';
 import { PacienteFormComponent } from './paciente-form/paciente-form.component';
 
@@ -18,16 +19,24 @@ export class PacientesComponent implements OnInit {
   searchTerm = '';
   loading = false;
 
-  displayedColumns: string[] = ['nome', 'cpf', 'telefone', 'email', 'acoes'];
+  displayedColumns: string[] = [];
 
   constructor(
     private pacienteService: PacienteService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
+    this.configurarColunas();
     this.carregarPacientes();
+  }
+
+  configurarColunas(): void {
+    this.displayedColumns = this.isAdmin() 
+      ? ['nome', 'cpf', 'telefone', 'email']
+      : ['nome', 'cpf', 'telefone', 'email', 'acoes'];
   }
 
   carregarPacientes(): void {
@@ -104,5 +113,9 @@ export class PacientesComponent implements OnInit {
         }
       });
     }
+  }
+
+  isAdmin(): boolean {
+    return this.authService.currentUserValue?.role === 'ADMIN';
   }
 }

@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -53,7 +54,8 @@ public class SecurityConfig {
     private void configureAuthorization(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
         auth.requestMatchers(PUBLIC_ENDPOINTS).permitAll()
             .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
-            .requestMatchers("/api/pacientes/**").hasAnyRole("PSICOLOGO", "ADMIN")
+            .requestMatchers(HttpMethod.GET, "/api/pacientes/**").hasAnyRole("PSICOLOGO", "ADMIN")
+            .requestMatchers("/api/pacientes/**").hasRole("PSICOLOGO")
             .anyRequest().authenticated();
     }
 
