@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: psicologia-db
+    container_name: psicologia-db1
     environment:
       POSTGRES_DB: psicologia
       POSTGRES_USER: admin
