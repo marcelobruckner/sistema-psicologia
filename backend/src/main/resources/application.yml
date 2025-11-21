@@ -6,11 +6,14 @@ spring:
     name: sistema-psicologia
   
   datasource:
-    url: jdbc:postgresql://localhost:5432/psicologia
-    username: admin
-    password: admin123
-    driver-class-name: org.postgresql.Driver
-  
+    #url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/psicologia}
+    #username: ${SPRING_DATASOURCE_USERNAME:admin}
+    #password: ${SPRING_DATASOURCE_PASSWORD:admin123}
+    #driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME:org.postgresql.Driver}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME}
   jpa:
     hibernate:
       ddl-auto: update
@@ -23,7 +26,7 @@ spring:
 
 app:
   jwt:
-    secret: minha-chave-secreta-super-segura-para-jwt-tokens
+    secret: ${APP_JWT_SECRET:minha-chave-secreta-super-segura-para-jwt-tokens}
     expiration: 86400000 # 24 horas
 
 management:
