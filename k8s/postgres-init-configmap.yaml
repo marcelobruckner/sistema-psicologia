@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init
+  namespace: psicologia
+data:
+  init-admin.sql: |
+    INSERT INTO usuarios (
+        id, 
+        username, 
+        password, 
+        email, 
+        nome_completo, 
+        role, 
+        ativo, 
+        data_criacao, 
+        data_atualizacao
+    ) VALUES (
+        gen_random_uuid(),
+        'admin',
+        '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra',
+        'admin@psicologia.com',
+        'Administrador do Sistema',
+        'ADMIN',
+        true,
+        NOW(),
+        NOW()
+    ) ON CONFLICT (username) DO NOTHING;
