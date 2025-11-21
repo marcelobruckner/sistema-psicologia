@@ -180,7 +180,7 @@ docker volume rm psicologia_data
 
 ## Como executar
 
-### Desenvolvimento
+### Desenvolvimento Local
 ```bash
 # 1. Iniciar banco de dados
 docker run -d --name psicologia-db -e POSTGRES_DB=psicologia -e POSTGRES_USER=admin -e POSTGRES_PASSWORD=admin123 -p 5432:5432 -v psicologia_data:/var/lib/postgresql/data postgres:15
@@ -195,6 +195,49 @@ cd frontend && npm install && ng serve
 ### Docker Compose (Ambiente completo)
 ```bash
 docker-compose up -d
+```
+
+### Containers Docker Individuais
+
+#### 1. Criar rede e volume
+```bash
+docker network create psicologia-network
+docker volume create psicologia_data
+```
+
+#### 2. PostgreSQL Database
+```bash
+docker run -d \
+  --name psicologia-db \
+  --network psicologia-network \
+  -p 5432:5432 \
+  -e POSTGRES_DB=psicologia \
+  -e POSTGRES_USER=admin \
+  -e POSTGRES_PASSWORD=admin123 \
+  -v psicologia_data:/var/lib/postgresql/data \
+  postgres:15
+```
+
+#### 3. Backend Spring Boot
+```bash
+docker run -d \
+  --name psicologia-backend \
+  --network psicologia-network \
+  -p 8080:8080 \
+  -e SPRING_DATASOURCE_URL=jdbc:postgresql://psicologia-db:5432/psicologia \
+  -e SPRING_DATASOURCE_USERNAME=admin \
+  -e SPRING_DATASOURCE_PASSWORD=admin123 \
+  -e SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver \
+  marcelobruckner/sistema-psicologia-backend:1.0
+```
+
+#### 4. Frontend Angular
+```bash
+docker run -d \
+  --name psicologia-frontend \
+  --network psicologia-network \
+  -p 4200:80 \
+  marcelobruckner/sistema-psicologia-frontend:1.0
 ```
 
 ### Acessar a aplicação
@@ -252,6 +295,17 @@ npm install
 ng serve
 ```
 
+## Credenciais de Usuários
+
+### Usuários Disponíveis
+- **Admin**: `admin` / Senha: `123` (ADMIN - apenas visualização)
+- **Psicólogo 1**: `Carolina` / Senha: `123` (PSICOLOGO - CRUD completo)
+- **Psicólogo 2**: `Heloisa` / Senha: `123` (PSICOLOGO - CRUD completo)
+
+### Diferenças de Perfil
+- **ADMIN**: Pode apenas visualizar pacientes (sem botões de ação)
+- **PSICOLOGO**: Pode criar, editar e excluir pacientes
+
 ## Estado Atual
 
 - ✅ Estrutura base criada com pastas organizadas
@@ -261,6 +315,9 @@ ng serve
 - ✅ Endpoints básicos funcionando
 - ✅ Frontend Angular com autenticação implementado
 - ✅ Tela de login e dashboard funcionais
-- ⏳ Pronto para implementação das entidades e funcionalidades específicas
+- ✅ Sistema de permissões por perfil implementado
+- ✅ Containers Docker individuais funcionando
+- ✅ Manifestos Kubernetes criados
+- ⏳ Pronto para deploy em produção
 
 O projeto está estruturado para ser um sistema completo de gestão de pacientes e prontuários médicos para psicólogos, com autenticação JWT e interface moderna em Angular Material.
